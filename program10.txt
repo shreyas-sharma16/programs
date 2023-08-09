@@ -13,15 +13,14 @@ try
 {
 ServerSocket serversocket=new ServerSocket(8000);
 System.out.println("Server Started....");
-System.out.println("-----------------------------------------------");
+System.out.println("--------------------------");
 Socket socket=serversocket.accept();
 DataInputStream input=new DataInputStream(socket.getInputStream());
 DataOutputStream output=new DataOutputStream(socket.getOutputStream());
 String str=input.readUTF();
 System.out.println("Requested File Name:"+str);
-System.out.println("-----------------------------------------------");
+System.out.println("-----------------------------");
 String everything;
-Dept. of CSE, GAT 62 Computer Networks Lab
 try
 {
 InputStream in = new FileInputStream(str);
@@ -29,14 +28,14 @@ BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 StringBuilder out = new StringBuilder();
 String line;
 System.out.println("Reading Contents of the File...");
-System.out.println("-----------------------------------------------");
+System.out.println("--------------------------");
 while ((line = reader.readLine()) != null)
 {
 out.append(line+"\n");
 }
 everything= out.toString();
 System.out.println("File Contents sent to client...");
-System.out.println("-----------------------------------------------");
+System.out.println("---------------------------");
 }
 catch(Exception ex)
 {
