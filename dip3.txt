@@ -1,0 +1,23 @@
+clear all;
+close all;
+clc;
+i=imread("peppers.png");
+imshow(i);
+i1=rgb2gray(i);
+figure;
+imshow(i1);
+[m,n]=size(i1);
+i2=zeros(m,n);
+for i=1:m
+    for j=1:n
+        if i1(i,j)>=128
+            i2(i,j)=255;
+        else
+            i1(i,j)=0;
+        end
+    end
+end
+
+figure;
+imshow(i2)
+          
