@@ -1,0 +1,27 @@
+clear all;
+close all;
+clc;
+i=imread("peppers.png");
+figure(1);
+imshow(i);
+ig=rgb2gray(i);
+figure(2);
+imshow(ig);
+count=zeros(1,256);
+
+[m,n]=size(ig);
+for i=1:m
+    for j=1:n
+        for Gray_level=0:255
+            if ig(i,j)==Gray_level
+                count(Gray_level+1)=count(Gray_level+1)+1;
+            end
+        end
+    end
+end
+disp(count)
+figure(3);
+stem(0:255,count);
+figure(4);
+imhist(ig);
+
