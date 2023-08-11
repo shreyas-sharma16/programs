@@ -1,0 +1,21 @@
+clear all;
+close all;
+clc;
+i=imread('peppers.png');
+figure(1);
+imshow(i);
+ig=rgb2gray(i);
+figure(2);
+imshow(ig);
+in=255-ig;
+figure(3);
+imshow(in);
+c=1;
+ig=double(ig);
+il=c.*log(1+ig);
+il=round(il);
+il=uint8(il);
+figure(4);
+imshow(il);
+
+
