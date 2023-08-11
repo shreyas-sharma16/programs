@@ -1,0 +1,21 @@
+clear all;
+close all;
+clc;
+i=imread('peppers.png');
+figure(1);
+imshow(i);
+ig=rgb2gray(i);
+figure(2);
+imshow(ig);
+m=mean2(ig);
+fprintf("mean=%f",m);
+med=median(ig(:));
+fprintf("median=%d",med);
+sd=std2(ig);
+fprintf("sd=%f",sd);
+var=(sd)^2;
+fprintf("var=%f",var);
+r1=corr2(ig,ig);
+fprintf("r1=%f",r1);
+r2=corr2(ig,i(:,:,1));
+fprintf("r2=%f",r2)
