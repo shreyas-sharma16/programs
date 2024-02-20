@@ -36,7 +36,6 @@ transform = T.Compose([T.ToTensor()])
 test_image_tensor = transform(test_image)
 print("type(test_image_tensor): \t", type(test_image_tensor), "\n")
 print("test_image_tensor.size(): \t", test_image_tensor.size(), "\n")
-Dept of CSE, GAT 20 DL Lab - 20CSEL76
 print("test_image_tensor: \n", test_image_tensor, "\n")
 predictions = model([test_image_tensor])
 print("type(predictions): \t", type(predictions), "\n")
