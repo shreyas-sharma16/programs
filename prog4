@@ -21,7 +21,6 @@ keras.layers.GlobalAveragePooling2D(),
 keras.layers.Dense(128, activation="relu"),
 keras.layers.Dropout(0.5),
 keras.layers.Dense(10, activation="softmax")
-Dept of CSE, GAT 18 DL Lab - 20CSEL76
 ])
 model.compile(optimizer=keras.optimizers.Adam(lr=0.001),
 loss="sparse_categorical_crossentropy",
