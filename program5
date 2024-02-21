@@ -1,0 +1,39 @@
+import torch
+from torchvision.models.detection import fasterrcnn_resnet50_fpn
+import torchvision.transforms as T
+import cv2
+import numpy as np
+
+# Load pre-trained model
+model = fasterrcnn_resnet50_fpn(pretrained=True)
+model.eval()
+
+# COCO object categories
+COCO_INSTANCE_CATEGORY_NAMES = ['cat','dog']
+
+# Test image path
+test_image_path = '/content/cat_dog.jpg'
+
+# Transform test image to PyTorch tensor
+transform = T.Compose([T.ToTensor()])
+test_image_tensor = transform(cv2.cvtColor(cv2.imread(test_image_path), cv2.COLOR_BGR2RGB))
+
+# Make predictions
+predictions = model([test_image_tensor])
+
+# Extract predictions
+prediction = predictions[0]
+bounding_boxes = prediction['boxes'].detach()
+class_labels = prediction['labels']
+
+# Visualize detection results
+test_image = cv2.imread(test_image_path)
+for box, label in zip(bounding_boxes, class_labels):
+    x1, y1, x2, y2 = map(int, box)
+    cv2.rectangle(test_image, (x1, y1), (x2, y2), (255, 0, 0), 2)
+    cv2.putText(test_image, COCO_INSTANCE_CATEGORY_NAMES[int(label)], (x1, y1),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+
+cv2.imshow('Detection Results', test_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
