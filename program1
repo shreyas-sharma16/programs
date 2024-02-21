@@ -1,0 +1,83 @@
+import numpy as np
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision import transforms, datasets
+from torch.utils.data import DataLoader
+
+# Load and preprocess the CIFAR-10 dataset using torchvision
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+])
+cifar10_train = datasets.CIFAR10(root='./data', train=True, transform=transform, download=True)
+cifar10_test = datasets.CIFAR10(root='./data', train=False, transform=transform, download=True)
+
+# Set data loaders
+train_loader = DataLoader(cifar10_train, batch_size=64, shuffle=True)
+test_loader = DataLoader(cifar10_test, batch_size=64)
+
+# Standardize the features for both KNN and neural network
+scaler = StandardScaler()
+
+# Load and preprocess the data for KNN
+cifar10 = datasets.CIFAR10(root='./data', train=True, transform=None, download=True)
+X = np.array(cifar10.data).astype('float32') / 255.0  # Normalize pixel values
+y = np.array(cifar10.targets)
+X_train_knn, X_test_knn, y_train_knn, y_test_knn = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train_knn = scaler.fit_transform(X_train_knn.reshape(X_train_knn.shape[0], -1))
+X_test_knn = scaler.transform(X_test_knn.reshape(X_test_knn.shape[0], -1))
+
+# Train and evaluate KNN
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train_knn, y_train_knn)
+knn_accuracy = knn.score(X_test_knn, y_test_knn)
+print(f"KNN Accuracy: {knn_accuracy:.2f}")
+
+# Define a simple 3-layer neural network for Softmax classification
+class SimpleNet(nn.Module):
+    def __init__(self):
+        super(SimpleNet, self).__init__()
+        self.fc1 = nn.Linear(32*32*3, 256)
+        self.fc2 = nn.Linear(256, 128)
+        self.fc3 = nn.Linear(128, 10)
+
+    def forward(self, x):
+        x = x.view(x.size(0), -1) # Flatten the input
+        x = nn.functional.relu(self.fc1(x))
+        x = nn.functional.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+# Initialize the model, optimizer, and loss function
+model = SimpleNet()
+optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+criterion = nn.CrossEntropyLoss()
+
+# Training loop
+num_epochs = 1
+for epoch in range(num_epochs):
+    model.train()
+    for inputs, labels in train_loader:
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+
+    # Evaluate the model on the test set
+    model.eval()
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for inputs, labels in test_loader:
+            outputs = model(inputs)
+            _, predicted = torch.max(outputs, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    accuracy = 100 * correct / total
+    print(f"3-Layer Neural Network Accuracy: {accuracy:.2f}%")
