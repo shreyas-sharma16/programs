@@ -3,6 +3,92 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
+# Load the CIFAR-10 dataset (You may need to download it separately)
+# Load and preprocess the data
+cifar10 = datasets.fetch_openml(name="CIFAR_10_small")
+X = cifar10.data.astype('float32')
+y = cifar10.target.astype('int')
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Standardize the features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+# Create and train a K-Nearest Neighbors (KNN) classifier
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+# Evaluate the classifier
+accuracy = knn.score(X_test, y_test)
+print(f"KNN Accuracy: {accuracy:.2f}")
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision import transforms, datasets
+from torch.utils.data import DataLoader
+# Set random seed for reproducibility
+torch.manual_seed(42)
+# Define a simple 3-layer neural network for Softmax classification
+class SimpleNet(nn.Module):
+      def __init__(self, input_size, num_classes):
+      super(SimpleNet, self).__init__()
+self.fc1 = nn.Linear(input_size, 256)
+self.fc2 = nn.Linear(256, 128)
+self.fc3 = nn.Linear(128, num_classes)
+def forward(self, x):
+x = x.view(x.size(0), -1) # Flatten the input
+x = torch.relu(self.fc1(x))
+x = torch.relu(self.fc2(x))
+x = self.fc3(x)
+return x
+# Load and preprocess the CIFAR-10 dataset using torchvision
+transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5,
+0.5))])
+cifar10_train = datasets.CIFAR10(root='./data', train=True, transform=transform, download=True)
+cifar10_test = datasets.CIFAR10(root='./data', train=False, transform=transform, download=True)
+# Set data loaders
+train_loader = DataLoader(cifar10_train, batch_size=64, shuffle=True)
+test_loader = DataLoader(cifar10_test, batch_size=64)
+# Initialize the model and optimizer
+model = SimpleNet(input_size=32*32*3, num_classes=10)
+optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+criterion = nn.CrossEntropyLoss()
+# Training loop
+num_epochs = 10
+for epoch in range(num_epochs):
+model.train()
+for inputs, labels in train_loader:
+optimizer.zero_grad()
+outputs = model(inputs)
+loss = criterion(outputs, labels)
+loss.backward()
+optimizer.step()
+# Evaluate the model on the test set
+model.eval()
+correct = 0
+total = 0
+with torch.no_grad():
+for inputs, labels in test_loader:
+outputs = model(inputs)
+_, predicted = torch.max(outputs, 1)
+total += labels.size(0)
+correct += (predicted == labels).sum().item()
+accuracy = 100 * correct / total
+print(f"3-Layer Neural Network Accuracy: {accuracy:.2f}%")
+
+
+
+
+
+
+
+
+
+
+import numpy as np
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
 import torch
 import torch.nn as nn
 import torch.optim as optim
